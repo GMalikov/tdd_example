@@ -1,15 +1,14 @@
 package com.example;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Template {
 
-    private Map<String, String> variables;
+    private final Map<String, String> variables;
 
-    private String templateText;
+    private final String templateText;
 
     public Template(String templateText) {
         this.variables = new HashMap<>();
@@ -21,24 +20,18 @@ public class Template {
     }
 
     public String evaluate() {
-        String result = replaceVariables();
-        checkForMissingValues(result);
-        return result;
+        TemplateParse p = new TemplateParse();
+        List<Segment> segments = p.parseSegments(templateText);
+        return concatenate(segments);
     }
 
-    private String replaceVariables() {
-        String result = templateText;
-        for (Map.Entry<String, String> entry : variables.entrySet()) {
-            String regex = "\\$\\{" + entry.getKey() + "\\}";
-            result = result.replaceAll(regex, entry.getValue());
+
+    private String concatenate(List<Segment> segments) {
+        StringBuilder result = new StringBuilder();
+        for (Segment segment : segments) {
+            result.append(segment.evaluate(variables));
         }
-        return result;
+        return result.toString();
     }
 
-    private void checkForMissingValues(String result) {
-        Matcher m = Pattern.compile(".*\\$\\{.+}.*").matcher(result);
-        if (m.find()) {
-            throw new MissingValueException("No value for " + m.group());
-        }
-    }
 }

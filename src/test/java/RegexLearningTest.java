@@ -1,16 +1,26 @@
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class RegexLearningTest {
 
     @Test
-    public void testHowGroupCountWorks() throws Exception {
+    public void testHowGroupCountWorks() {
         String haystack = "The needle shop sells needles";
         String regex = "(needle)";
         Matcher matcher = Pattern.compile(regex).matcher(haystack);
-        Assertions.assertTrue(matcher.find());
+        assertTrue(matcher.find());
+        assertEquals(4, matcher.start(), "Wrong start index of 1st match");
+        assertEquals(10, matcher.end(), "Wrong end index of 1st match");
+
+        assertTrue(matcher.find());
+        assertEquals(22, matcher.start(), "Wrong start index of 2nd match.");
+        assertEquals(28, matcher.end(), "Wrong end index of 2nd match.");
+
+        assertFalse(matcher.find(), "Should not have any more matches.");
+
     }
 }
